@@ -1,0 +1,16 @@
+# Assignment solution: read-only root filesystem for the Gateway sandbox.
+# Use as an overlay:
+#   docker compose --project-directory . -f docker/compose.yaml \
+#     -f solution/compose.readonly.yaml --env-file .env up -d openclaw-gateway
+services:
+  openclaw-gateway:
+    read_only: true
+    tmpfs:
+      # OpenClaw's temp root. Sticky + world-writable like a normal /tmp.
+      - /tmp:rw,noexec,nosuid,size=256m,mode=1777
+      # Fallback temp dir OpenClaw uses (/home/node/.cache/openclaw-1000).
+      - /home/node/.cache:rw,noexec,nosuid,size=64m,uid=1000,gid=1000,mode=0700
+    volumes:
+      # The official image entrypoint keeps a pre-repair copy of state here on
+      # upgrades (<state-dir>.update-captures). Persist it instead of losing it.
+      - ${L01_STATE_DIR:-./state}/update-captures:/home/node/.openclaw.update-captures

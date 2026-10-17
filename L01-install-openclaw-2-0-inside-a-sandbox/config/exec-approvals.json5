@@ -1,0 +1,15 @@
+// Lesson 01 exec policy for the Gateway host (here: the container).
+// Applied by scripts/setup.sh with `openclaw approvals set --stdin` (JSON5).
+// Fresh 2026.10.4 installs resolve to security=full, ask=off; the stricter
+// host policy wins, so this file switches command execution off.
+{
+  version: 1,
+  defaults: {
+    // deny: the agent may not run shell commands at all (Lesson 04 opens a scoped allowlist).
+    security: "deny",
+    // on-miss: once an allowlist exists, anything not on it asks a human first.
+    ask: "on-miss",
+    // deny: if nobody answers the prompt, the command is refused.
+    askFallback: "deny",
+  },
+}

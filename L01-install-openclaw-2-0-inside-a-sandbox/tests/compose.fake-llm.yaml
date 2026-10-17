@@ -1,0 +1,22 @@
+# Integration-test overlay: an offline, OpenAI-compatible fake model so the
+# real OpenClaw Gateway can complete a full agent turn without an API key.
+# Runs inside the same OpenClaw image (it ships python3) on the compose network;
+# nothing is published to the host.
+services:
+  fake-llm:
+    image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.10.4}
+    entrypoint: ["python3", "/tests/fake_llm.py"]
+    environment:
+      FAKE_LLM_HOST: 0.0.0.0
+      FAKE_LLM_PORT: "18800"
+    volumes:
+      - ./tests/fake_llm.py:/tests/fake_llm.py:ro
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+
+  openclaw-gateway:
+    depends_on:
+      - fake-llm

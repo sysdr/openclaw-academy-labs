@@ -1,0 +1,232 @@
+{
+ "_note": "Captured from OpenClaw 2026.10.4 and Docker 29.8 during lesson testing, then trimmed. Host paths and ids anonymised.",
+ "inspect_safe": [
+  {
+   "Id": "3f9c0d2a7b1e",
+   "Name": "/openclaw-l01-openclaw-gateway-1",
+   "State": {
+    "Status": "running",
+    "Running": true,
+    "Health": {
+     "Status": "healthy"
+    }
+   },
+   "Config": {
+    "User": "node",
+    "Image": "ghcr.io/openclaw/openclaw:2026.10.4"
+   },
+   "HostConfig": {
+    "CapDrop": [
+     "ALL"
+    ],
+    "SecurityOpt": [
+     "no-new-privileges:true"
+    ],
+    "Privileged": false,
+    "PidsLimit": 512,
+    "Memory": 2147483648,
+    "PortBindings": {
+     "18789/tcp": [
+      {
+       "HostIp": "127.0.0.1",
+       "HostPort": "18789"
+      }
+     ]
+    }
+   },
+   "Mounts": [
+    {
+     "Type": "bind",
+     "Source": "/home/you/L01/state/openclaw",
+     "Destination": "/home/node/.openclaw"
+    },
+    {
+     "Type": "bind",
+     "Source": "/home/you/L01/state/auth-profile-secrets",
+     "Destination": "/home/node/.config/openclaw"
+    }
+   ]
+  }
+ ],
+ "inspect_unsafe": [
+  {
+   "Id": "3f9c0d2a7b1e",
+   "Name": "/openclaw-l01-openclaw-gateway-1",
+   "State": {
+    "Status": "running",
+    "Running": true,
+    "Health": {
+     "Status": "healthy"
+    }
+   },
+   "Config": {
+    "User": "root",
+    "Image": "ghcr.io/openclaw/openclaw:2026.10.4"
+   },
+   "HostConfig": {
+    "CapDrop": null,
+    "SecurityOpt": null,
+    "Privileged": false,
+    "PidsLimit": null,
+    "Memory": 0,
+    "PortBindings": {
+     "18789/tcp": [
+      {
+       "HostIp": "",
+       "HostPort": "18789"
+      }
+     ]
+    }
+   },
+   "Mounts": [
+    {
+     "Type": "bind",
+     "Source": "/home/you/L01/state/openclaw",
+     "Destination": "/home/node/.openclaw"
+    },
+    {
+     "Type": "bind",
+     "Source": "/home/you/L01/state/auth-profile-secrets",
+     "Destination": "/home/node/.config/openclaw"
+    },
+    {
+     "Type": "bind",
+     "Source": "/var/run/docker.sock",
+     "Destination": "/var/run/docker.sock"
+    }
+   ]
+  }
+ ],
+ "approvals_deny": {
+  "path": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config",
+  "exists": true,
+  "file": {
+   "version": 1,
+   "socket": {
+    "path": "/home/node/.openclaw/exec-approvals.sock"
+   },
+   "defaults": {
+    "security": "deny",
+    "ask": "on-miss",
+    "askFallback": "deny"
+   },
+   "agents": {}
+  },
+  "resolvedDefaults": {
+   "security": "deny",
+   "ask": "on-miss",
+   "askFallback": "deny",
+   "autoAllowSkills": false
+  },
+  "effectivePolicy": {
+   "scopes": [
+    {
+     "scopeLabel": "tools.exec",
+     "configPath": "tools.exec",
+     "agentId": "main",
+     "security": {
+      "requested": "full",
+      "requestedSource": "OpenClaw default (full)",
+      "host": "deny",
+      "hostSource": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config defaults.security",
+      "effective": "deny",
+      "note": "stricter host security wins"
+     },
+     "ask": {
+      "requested": "off",
+      "requestedSource": "OpenClaw default (off)",
+      "host": "on-miss",
+      "hostSource": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config defaults.ask",
+      "effective": "on-miss",
+      "note": "more aggressive ask wins"
+     },
+     "askFallback": {
+      "effective": "deny",
+      "source": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config defaults.askFallback"
+     }
+    }
+   ]
+  }
+ },
+ "approvals_full": {
+  "path": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config",
+  "exists": true,
+  "file": {
+   "version": 1,
+   "socket": {
+    "path": "/home/node/.openclaw/exec-approvals.sock"
+   },
+   "defaults": {
+    "security": "full",
+    "ask": "off",
+    "askFallback": "deny"
+   },
+   "agents": {}
+  },
+  "resolvedDefaults": {
+   "security": "full",
+   "ask": "off",
+   "askFallback": "deny",
+   "autoAllowSkills": false
+  },
+  "effectivePolicy": {
+   "scopes": [
+    {
+     "scopeLabel": "tools.exec",
+     "configPath": "tools.exec",
+     "agentId": "main",
+     "security": {
+      "requested": "full",
+      "requestedSource": "OpenClaw default (full)",
+      "host": "full",
+      "hostSource": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config defaults.security",
+      "effective": "full",
+      "note": "stricter host security wins"
+     },
+     "ask": {
+      "requested": "off",
+      "requestedSource": "OpenClaw default (off)",
+      "host": "on-miss",
+      "hostSource": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config defaults.ask",
+      "effective": "off",
+      "note": "more aggressive ask wins"
+     },
+     "askFallback": {
+      "effective": "deny",
+      "source": "/home/node/.openclaw/state/openclaw.sqlite#exec_approvals_config defaults.askFallback"
+     }
+    }
+   ]
+  }
+ },
+ "agent_ok": {
+  "runId": "f9c1c5f4-d144-4b9d-898c-c25a881429f2",
+  "status": "ok",
+  "summary": "completed",
+  "result": {
+   "payloads": [
+    {
+     "text": "SANDBOX-OK-1a2b3c4d",
+     "mediaUrl": null
+    }
+   ],
+   "meta": {
+    "durationMs": 1263,
+    "agentMeta": {
+     "sessionId": "b8a741c8-255a-4d5e-81e7-e8826660fdaf",
+     "provider": "custom-fake-llm-18800",
+     "model": "fake-model"
+    }
+   }
+  }
+ },
+ "agent_error": {
+  "ok": false,
+  "error": {
+   "type": "cli_error",
+   "message": "Gateway not reachable at ws://127.0.0.1:18799 (ECONNREFUSED).\nStart it with `openclaw gateway run` or check `openclaw gateway status`."
+  }
+ },
+ "ports_loopback": "127.0.0.1:18789\n",
+ "ports_all": "0.0.0.0:18789\n[::]:18789\n"
+}

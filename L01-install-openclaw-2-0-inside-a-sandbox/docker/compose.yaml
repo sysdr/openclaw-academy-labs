@@ -1,0 +1,62 @@
+# Lesson 01: OpenClaw Gateway inside a hardened Docker sandbox.
+# Based on the upstream docker-compose.yml (openclaw/openclaw, main), with
+# these deliberate differences:
+#   - host port published on 127.0.0.1 only (upstream publishes on all interfaces)
+#   - all Linux capabilities dropped (upstream drops NET_RAW and NET_ADMIN)
+#   - memory and process limits
+#   - state lives in ./state inside this lesson folder, not in ~/.openclaw
+#   - no docker.sock mount, no bridge or Teams ports
+#   - no separate openclaw-cli service: CLI commands run with `compose exec`
+#     inside the Gateway container (a second container sharing the state dir
+#     cannot verify Gateway ownership across PID namespaces)
+# Run it through the Makefile; scripts pass --project-directory and --env-file.
+name: openclaw-l01
+
+x-hardening: &hardening
+  image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.10.4}
+  env_file:
+    - path: ${L01_ENV_FILE:-.env}
+      required: false
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  init: true
+
+x-env: &env
+  HOME: /home/node
+  OPENCLAW_HOME: /home/node
+  TERM: xterm-256color
+  OPENCLAW_STATE_DIR: /home/node/.openclaw
+  OPENCLAW_CONFIG_PATH: /home/node/.openclaw/openclaw.json
+  OPENCLAW_CONFIG_DIR: /home/node/.openclaw
+  OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
+  TZ: ${OPENCLAW_TZ:-UTC}
+  # The host port comes from .env; inside the container the listener is always
+  # 18789. Pin it so the in-container CLI never dials the host-side port.
+  OPENCLAW_GATEWAY_PORT: "18789"
+
+x-volumes: &volumes
+  - ${L01_STATE_DIR:-./state}/openclaw:/home/node/.openclaw
+  - ${L01_STATE_DIR:-./state}/auth-profile-secrets:/home/node/.config/openclaw
+
+services:
+  openclaw-gateway:
+    <<: *hardening
+    environment: *env
+    volumes: *volumes
+    ports:
+      - "127.0.0.1:${OPENCLAW_GATEWAY_PORT:-18789}:18789"
+    mem_limit: ${OPENCLAW_MEM_LIMIT:-2g}
+    pids_limit: 512
+    restart: unless-stopped
+    # "lan" is the in-container listener. The host side stays loopback-only
+    # because of the 127.0.0.1 publish above.
+    command: ["node", "dist/index.js", "gateway", "--bind", "lan", "--port", "18789"]
+    healthcheck:
+      test: ["CMD", "node", "dist/docker-healthcheck.js"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+

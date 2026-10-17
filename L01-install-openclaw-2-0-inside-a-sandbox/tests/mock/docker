@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Mock `docker` for tests/e2e_mock.sh. Answers only the calls verify.sh makes,
+# from fixtures/cases.json. MOCK_STATE=pass -> a hardened sandbox;
+# MOCK_STATE=fail -> a running but unsafe container (root, caps kept,
+# docker.sock mounted, port on all interfaces, exec allowed, agent unreachable).
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")/../.." && pwd)"
+CASES="$HERE/fixtures/cases.json"
+STATE="${MOCK_STATE:-pass}"
+fixture() { python3 -c 'import json,sys; v=json.load(open(sys.argv[1]))[sys.argv[2]]; print(v if isinstance(v,str) else json.dumps(v), end="")' "$CASES" "$1"; }
+pick() { if [ "$STATE" = pass ]; then fixture "$1"; else fixture "$2"; fi; }
+
+case "${1:-}" in
+  info) exit 0 ;;
+  inspect) pick inspect_safe inspect_unsafe; exit 0 ;;
+  port) pick ports_loopback ports_all; exit 0 ;;
+  exec)  # docker exec <cid> id -u
+    if [ "$STATE" = pass ]; then echo 1000; else echo 0; fi; exit 0 ;;
+  compose) ;;
+  *) echo "mock docker: unsupported: $*" >&2; exit 1 ;;
+esac
+
+# docker compose ... <subcommand> ...
+args=" $* "
+if [[ "$args" == *" ps "* ]]; then echo "3f9c0d2a7b1e"; exit 0; fi
+if [[ "$args" == *" exec "*" approvals get "* ]]; then pick approvals_deny approvals_full; exit 0; fi
+if [[ "$args" == *" exec "*" agent "* ]]; then
+  if [ "$STATE" != pass ]; then fixture agent_error; echo; echo "Couldn't connect to OpenClaw." >&2; exit 1; fi
+  nonce="$(printf '%s' "$args" | grep -oE 'SANDBOX-OK-[A-Za-z0-9]+' | head -n 1)"
+  fixture agent_ok | sed "s/SANDBOX-OK-1a2b3c4d/$nonce/"; exit 0
+fi
+echo "mock docker: unsupported compose call: $*" >&2; exit 1

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Mock `curl` for tests/e2e_mock.sh: verify.sh only asks for an HTTP status
+# code with -w '%{http_code}'. A sandbox that started reports 200 in both states.
+set -euo pipefail
+printf '200'

@@ -1,0 +1,27 @@
+# Expected verify.sh check lines. Used by tests/e2e_mock.sh.
+## pass (hardened sandbox)
+1. Docker daemon reachable                                 PASS
+2. Gateway container running                               PASS
+3. Container healthcheck reports healthy                   PASS
+4. Gateway process is not root (uid != 0)                  PASS
+5. no-new-privileges is set                                PASS
+6. All capabilities dropped, not privileged                PASS
+7. Docker socket not mounted into the sandbox              PASS
+8. Host port published on loopback only                    PASS
+9. Gateway admits traffic (/startupz = 200)                PASS
+10. Exec policy is deny (agent cannot run commands)        PASS
+11. Agent answered first message with fresh token          PASS
+11/11 PASS
+## fail (running but unsafe container)
+1. Docker daemon reachable                                 PASS
+2. Gateway container running                               PASS
+3. Container healthcheck reports healthy                   PASS
+4. Gateway process is not root (uid != 0)                  FAIL
+5. no-new-privileges is set                                FAIL
+6. All capabilities dropped, not privileged                FAIL
+7. Docker socket not mounted into the sandbox              FAIL
+8. Host port published on loopback only                    FAIL
+9. Gateway admits traffic (/startupz = 200)                PASS
+10. Exec policy is deny (agent cannot run commands)        FAIL
+11. Agent answered first message with fresh token          FAIL
+4/11 PASS (7 FAIL)

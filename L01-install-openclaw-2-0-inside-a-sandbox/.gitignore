@@ -1,0 +1,31 @@
+# Local secrets and runtime state (never commit)
+.env
+.env.local
+.env.*.local
+state/
+reports/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.log
+
+# Temporary / local overlays
+tmp/
+.tmp/
+*.bak
+*.bak.*
+openclaw.json.last-good
