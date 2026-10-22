@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""A stand-in `docker` CLI for the end-to-end test. It answers only the calls
+audit.sh makes, from fixtures/cases.json. MOCK_CASE picks the evidence set
+(good or bad). Anything else exits 1 so unexpected calls fail loudly."""
+import json
+import os
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+case = json.loads((ROOT / "fixtures" / "cases.json").read_text())[os.environ.get("MOCK_CASE", "good")]
+args = sys.argv[1:]
+
+
+def out(name: str) -> None:
+    sys.stdout.write(case[name])
+    sys.exit(0)
+
+
+if args[:1] == ["info"] or args[:2] == ["compose", "version"]:
+    print("mock docker")
+    sys.exit(0)
+if args[:1] == ["inspect"]:
+    out("inspect.json")
+if args[:1] == ["port"]:
+    out("port.txt")
+if args[:1] == ["compose"]:
+    if "ps" in args:
+        print("mockcid0001")
+        sys.exit(0)
+    if "exec" in args and "dist/index.js" in args:
+        cli = args[args.index("dist/index.js") + 1:]
+        if cli[:2] == ["security", "audit"]:
+            out("oc-audit.json")
+        if cli[:2] == ["approvals", "get"]:
+            out("approvals.json")
+        if cli == ["config", "get", "gateway.auth.mode"]:
+            out("auth-mode.txt")
+        if cli[:3] == ["config", "get", "security.audit.suppressions"]:
+            # Real 2026.10.5 behaviour for an unset path: error envelope, exit 1.
+            print('{"ok": false, "error": {"type": "cli_error", "message": "Config path is valid but unset"}}')
+            sys.exit(1)
+        if cli == ["--version"]:
+            out("version.txt")
+print(f"mock docker: unexpected call: {' '.join(args)}", file=sys.stderr)
+sys.exit(1)

@@ -1,0 +1,11 @@
+ 1. Gateway port published on loopback only  FAIL
+ 2. Gateway requires a token or password     FAIL
+ 3. OpenClaw audit: 0 critical findings      FAIL
+ 4. OpenClaw audit: 0 unexplained warnings   FAIL
+ 5. No dangerously* flags, even suppressed   FAIL
+ 6. Exec policy is not security=full         FAIL
+ 7. Secrets and state are owner-only         FAIL
+ 8. Container: non-root, no capabilities     FAIL
+ 9. Container: no host socket or namespaces  FAIL
+10. Version pinned and past known RCE        FAIL
+0/10 PASS

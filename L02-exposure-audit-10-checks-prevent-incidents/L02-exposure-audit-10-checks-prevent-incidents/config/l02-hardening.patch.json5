@@ -1,0 +1,17 @@
+// Lesson 02: closes the findings `openclaw security audit` raises against
+// the Lesson 01 sandbox. Applied with `openclaw config patch --stdin`.
+{
+  gateway: {
+    // The gateway binds "lan" inside the container, so OpenClaw asks which
+    // browser origins may open the Control UI. Only your own machine.
+    controlUi: {
+      allowedOrigins: ["http://127.0.0.1:18789", "http://localhost:18789"],
+    },
+    // Slow down token guessing: 10 failures per minute, then a 5-minute lockout.
+    auth: {
+      rateLimit: { maxAttempts: 10, windowMs: 60000, lockoutMs: 300000 },
+    },
+  },
+  // No mDNS broadcasts from the sandbox.
+  discovery: { mdns: { mode: "off" } },
+}

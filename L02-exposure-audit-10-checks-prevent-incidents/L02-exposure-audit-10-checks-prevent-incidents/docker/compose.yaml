@@ -1,0 +1,30 @@
+# The Lesson 01 sandbox, unchanged except the version pin (2026.10.4 -> 2026.10.5).
+# Lesson 02 audits this container; it does not rebuild it.
+name: openclaw-l02
+services:
+  openclaw-gateway:
+    image: ghcr.io/openclaw/openclaw:${OPENCLAW_VERSION:-2026.10.5}
+    user: "${OPENCLAW_UID:-1000}:${OPENCLAW_GID:-1000}"
+    init: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: ${OPENCLAW_MEM_LIMIT:-2g}
+    pids_limit: 512
+    ports:
+      - "127.0.0.1:${OPENCLAW_GATEWAY_PORT:-18789}:18789"
+    environment:
+      HOME: /home/node
+      OPENCLAW_STATE_DIR: /home/node/.openclaw
+      OPENCLAW_CONFIG_PATH: /home/node/.openclaw/openclaw.json
+      OPENCLAW_GATEWAY_PORT: "18789"
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:?run make bootstrap first}
+    volumes:
+      - ${STATE_DIR:-../state}/openclaw:/home/node/.openclaw
+    command: ["node", "dist/index.js", "gateway", "--bind", "lan", "--port", "18789"]
+    healthcheck:
+      test: ["CMD", "node", "dist/docker-healthcheck.js"]
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 120s
+    restart: unless-stopped

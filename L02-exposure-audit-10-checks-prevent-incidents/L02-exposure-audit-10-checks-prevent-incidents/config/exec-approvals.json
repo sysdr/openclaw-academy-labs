@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "defaults": { "security": "deny", "ask": "on-miss", "askFallback": "deny" },
+  "agents": {}
+}
