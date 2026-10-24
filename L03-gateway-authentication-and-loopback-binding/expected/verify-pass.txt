@@ -1,0 +1,12 @@
+01 gateway.bind is "loopback"                              PASS
+02 gateway.auth.mode is "token"                            PASS
+03 no literal token in config file                         PASS
+04 token set, >=32 chars, not a placeholder                PASS
+05 listener on :18789 is loopback-only (<tool>)            PASS
+06 no wildcard listener (0.0.0.0, ::, *)                   PASS
+07 GET /health on 127.0.0.1 returns 200                    PASS
+08 refused on LAN address(es): <your LAN IP>               PASS
+09 no token and wrong token both get 401                   PASS
+10 correct token is accepted (HTTP <200|400|403|404>)      PASS
+----
+10/10 PASS

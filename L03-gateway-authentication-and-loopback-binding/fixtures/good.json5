@@ -1,0 +1,18 @@
+// Lesson 03: merge these keys into ~/.openclaw/openclaw.json (or run `make setup`).
+// The token is deliberately NOT here. The Gateway reads it from OPENCLAW_GATEWAY_TOKEN.
+{
+  gateway: {
+    mode: "local",       // the Gateway refuses to start unless this is "local"
+    port: 18789,         // default; --port and OPENCLAW_GATEWAY_PORT override it
+    bind: "loopback",    // lock 1: listen on 127.0.0.1 only
+    auth: {
+      mode: "token",     // lock 2: every WebSocket and HTTP caller must present the token
+      rateLimit: {
+        maxAttempts: 10,      // failed attempts allowed per window
+        windowMs: 60000,      // 1 minute window
+        lockoutMs: 300000,    // 5 minute lockout for non-loopback clients
+        exemptLoopback: true, // default; loopback is slowed down, not locked out
+      },
+    },
+  },
+}

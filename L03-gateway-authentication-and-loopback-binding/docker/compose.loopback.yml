@@ -1,0 +1,9 @@
+# Lesson 03, Docker path. Use with the official compose file from L01:
+#   docker compose -f docker-compose.yml -f compose.loopback.yml up -d openclaw-gateway
+# Inside the container the Gateway must listen beyond the container's own loopback
+# (the official setup uses bind "lan") or Docker cannot forward to it. The host-side
+# lock is the publish address: 127.0.0.1 only. Token auth stays on either way.
+services:
+  openclaw-gateway:
+    ports: !override
+      - "127.0.0.1:18789:18789"
