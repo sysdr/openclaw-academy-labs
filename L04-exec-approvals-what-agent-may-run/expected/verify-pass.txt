@@ -1,0 +1,27 @@
+prereq: python3 present                                        PASS
+prereq: openclaw CLI present                                   PASS
+prereq: openclaw >= 2026.8.1                                   PASS
+== Part A: the allowlist config is what OpenClaw enforces
+gateway healthy on loopback (from L03)                         PASS
+tools.exec.security is allowlist                               PASS
+tools.exec.ask is on-miss                                      PASS
+defaults.security is deny (agents not listed get nothing)      PASS
+agents.main.security is allowlist                              PASS
+agents.main.ask is on-miss                                     PASS
+askFallback is deny (fail closed when no approver answers)     PASS
+autoAllowSkills is false (no implicit entries)                 PASS
+allowlist matches config exactly (3 entries)                   PASS
+no interpreter allowlisted without argPattern                  PASS
+effective security is allowlist (got allowlist)                PASS
+every allowlisted path exists on this host                     PASS
+== Part B: commands through the real exec tool
+allowed: uptime by bare name                                   PASS
+allowed: ls via /bin symlink                                   PASS
+allowed: git status (argPattern match)                         PASS
+denied: curl is not on the allowlist                           PASS
+denied: git push (argPattern miss)                             PASS
+denied: chained touch after uptime                             PASS
+  side effect did not happen                                   PASS
+denied: redirection into a file                                PASS
+  side effect did not happen                                   PASS
+21/21 PASS

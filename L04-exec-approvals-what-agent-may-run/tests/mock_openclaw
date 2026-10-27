@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""Tiny stand-in for the `openclaw` CLI, for tests only.
+
+MOCK_STATE=pass  -> behaves like a correctly configured 2026.10.x host.
+MOCK_STATE=fail  -> exec security=full, ask=off: everything runs, side effects happen.
+Only the subcommands L04 scripts call are implemented.
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATE = os.environ.get("MOCK_STATE", "pass")
+ALLOWED = {"uptime", "/bin/ls /", "git status", "ls /", "df -h"}
+
+
+def out(obj):
+    print(json.dumps(obj))
+    return 0
+
+
+def snapshot():
+    if STATE == "pass":
+        doc = json.load(open(os.path.join(ROOT, "config", "exec-approvals.json")))
+        effective = "allowlist"
+    else:
+        doc = json.load(open(os.path.join(ROOT, "fixtures", "approvals-loose.json")))
+        effective = "full"
+    scope = {"agentId": "main", "security": {"effective": effective}}
+    return {"file": doc, "effectivePolicy": {"scopes": [scope]}}
+
+
+def run_agent(args):
+    message = args[args.index("--message") + 1]
+    command = re.search(r"RUN:[ \t]*([^\n]+)", message).group(1).strip()
+    if STATE == "pass" and command not in ALLOWED:
+        result = ("exec denied: Headless runs cannot wait for interactive exec approval.\n"
+                  "Effective host exec policy: security=allowlist ask=on-miss askFallback=deny")
+        failures = 1
+    else:
+        # Loose policy: the command really runs, which is exactly what verify.sh must catch.
+        done = subprocess.run(["bash", "-c", command], capture_output=True, text=True, timeout=20)
+        result, failures = (done.stdout or done.stderr)[:500], 0
+    log = os.environ["L04_PROBE_LOG"]
+    os.makedirs(os.path.dirname(log), exist_ok=True)
+    with open(log, "a") as fh:
+        fh.write(json.dumps({"ts": 0, "call_id": "mock", "command": command, "result": result}) + "\n")
+    return out({"status": "ok", "result": {"meta": {"toolSummary": {"calls": 1, "tools": ["exec"], "failures": failures}}}})
+
+
+def main(args):
+    if args[:1] in (["--version"], ["-V"]):
+        print("OpenClaw 2026.10.7 (mock)")
+        return 0
+    if args[:1] == ["health"]:
+        return out({"ok": True})
+    if args[:3] == ["config", "get", "tools.exec"]:
+        if STATE == "pass":
+            # Normalized 2026.10.x shape: mode="ask" == security=allowlist + ask=on-miss
+            return out({"mode": "ask", "strictInlineEval": True})
+        return out({"mode": "full"})
+    if args[:2] == ["config", "patch"]:
+        return 0
+    if args[:2] == ["approvals", "get"]:
+        return out(snapshot())
+    if args[:2] == ["approvals", "set"]:
+        return 0
+    if args[:1] == ["agent"]:
+        return run_agent(args)
+    print("mock_openclaw: unsupported: %s" % " ".join(args), file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

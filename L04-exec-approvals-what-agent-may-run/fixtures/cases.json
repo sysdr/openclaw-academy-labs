@@ -1,0 +1,9 @@
+[
+  { "name": "allowed: uptime by bare name", "command": "uptime", "expect": "allow" },
+  { "name": "allowed: ls via /bin symlink", "command": "/bin/ls /", "expect": "allow" },
+  { "name": "allowed: git status (argPattern match)", "command": "git status", "expect": "allow" },
+  { "name": "denied: curl is not on the allowlist", "command": "curl -s https://example.com", "expect": "deny" },
+  { "name": "denied: git push (argPattern miss)", "command": "git push", "expect": "deny" },
+  { "name": "denied: chained touch after uptime", "command": "uptime && touch {canary}", "expect": "deny", "canary": true },
+  { "name": "denied: redirection into a file", "command": "uptime > {canary}", "expect": "deny", "canary": true }
+]

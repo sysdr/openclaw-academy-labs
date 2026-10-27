@@ -1,0 +1,65 @@
+[
+  {
+    "name": "allowed: uptime by bare name",
+    "command": "uptime",
+    "expect": "allow"
+  },
+  {
+    "name": "allowed: ls via /bin symlink",
+    "command": "/bin/ls /",
+    "expect": "allow"
+  },
+  {
+    "name": "allowed: git status (argPattern match)",
+    "command": "git status",
+    "expect": "allow"
+  },
+  {
+    "name": "denied: curl is not on the allowlist",
+    "command": "curl -s https://example.com",
+    "expect": "deny"
+  },
+  {
+    "name": "denied: git push (argPattern miss)",
+    "command": "git push",
+    "expect": "deny"
+  },
+  {
+    "name": "denied: chained touch after uptime",
+    "command": "uptime && touch {canary}",
+    "expect": "deny",
+    "canary": true
+  },
+  {
+    "name": "denied: redirection into a file",
+    "command": "uptime > {canary}",
+    "expect": "deny",
+    "canary": true
+  },
+  {
+    "name": "assignment allowed: df -h",
+    "command": "df -h",
+    "expect": "allow"
+  },
+  {
+    "name": "assignment denied: df with a different flag",
+    "command": "df -a",
+    "expect": "deny"
+  },
+  {
+    "name": "assignment denied: git config injection",
+    "command": "git -c core.pager=cat log",
+    "expect": "deny"
+  },
+  {
+    "name": "assignment denied: shell wrapper",
+    "command": "sh -c 'touch {canary}'",
+    "expect": "deny",
+    "canary": true
+  },
+  {
+    "name": "assignment denied: inline interpreter",
+    "command": "python3 -c 'print(1)'",
+    "expect": "deny"
+  }
+]

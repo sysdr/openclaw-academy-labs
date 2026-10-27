@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "defaults": { "security": "full", "ask": "off", "askFallback": "full" },
+  "agents": {
+    "main": {
+      "security": "full",
+      "ask": "off",
+      "autoAllowSkills": true,
+      "allowlist": [
+        { "pattern": "/usr/bin/uptime" },
+        { "pattern": "/bin/ls" },
+        { "pattern": "/usr/bin/git" },
+        { "pattern": "/usr/bin/python3" }
+      ]
+    }
+  }
+}
