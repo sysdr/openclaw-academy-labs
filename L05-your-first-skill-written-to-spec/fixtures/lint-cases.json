@@ -1,0 +1,20 @@
+[
+  {"id": "good", "dir": "uptime-report", "fail_rules": [],
+   "text": "---\nname: uptime-report\ndescription: Report host uptime and load average.\nmetadata: { \"openclaw\": { \"requires\": { \"bins\": [\"uptime\"] } } }\n---\n\nRun `uptime` with the `exec` tool.\n"},
+  {"id": "uppercase-name (OpenClaw 2026.10.7 loads it anyway)", "dir": "L05_Bad_Case", "fail_rules": ["R3"],
+   "text": "---\nname: L05_Bad_Case\ndescription: Uppercase name test.\n---\nbody\n"},
+  {"id": "name-differs-from-folder (OpenClaw loads it under the name)", "dir": "l05-dir-mismatch", "fail_rules": ["R4"],
+   "text": "---\nname: l05-other-name\ndescription: Folder mismatch test.\n---\nbody\n"},
+  {"id": "missing-description (OpenClaw skips it, log line only)", "dir": "l05-bad-nodesc", "fail_rules": ["R5"],
+   "text": "---\nname: l05-bad-nodesc\n---\nbody\n"},
+  {"id": "description-too-long", "dir": "l05-long", "fail_rules": ["R5"],
+   "text": "---\nname: l05-long\ndescription: This description keeps going well past the one hundred and sixty character guidance in the OpenClaw docs, which costs prompt budget on every single turn for every agent.\n---\nbody\n"},
+  {"id": "broken-metadata (OpenClaw skips it, log line only)", "dir": "l05-bad-meta", "fail_rules": ["R6"],
+   "text": "---\nname: l05-bad-meta\ndescription: Broken metadata test.\nmetadata: { \"openclaw\": { \"requires\": { \"bins\": [\"x\"] }\n---\nbody\n"},
+  {"id": "typo-in-key", "dir": "l05-typo", "fail_rules": ["R2", "R5"],
+   "text": "---\nname: l05-typo\ndescripton: Typo in the key name.\n---\nbody\n"},
+  {"id": "multi-line-metadata", "dir": "l05-multiline", "fail_rules": ["R2", "R6"],
+   "text": "---\nname: l05-multiline\ndescription: Multi-line metadata block.\nmetadata:\n  openclaw:\n    always: true\n---\nbody\n"},
+  {"id": "secret-in-body", "dir": "l05-secret", "fail_rules": ["R8"],
+   "text": "---\nname: l05-secret\ndescription: Secret in the body.\n---\nUse api_key=abcd1234efgh5678ijkl when calling.\n"}
+]

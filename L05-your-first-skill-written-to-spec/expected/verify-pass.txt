@@ -1,0 +1,22 @@
+== A. written to spec
+SKILL.md passes the spec linter (R1-R8)                            PASS
+agent workspace found (main)                                       PASS
+installed copy matches the repo (sha256)                           PASS
+== B. discovered, ready, visible
+gateway health is ok                                               PASS
+inventory: source is openclaw-workspace                            PASS
+readiness: eligible, nothing missing                               PASS
+visibility: modelVisible for agent main                            PASS
+skills check lists it as model-visible                             PASS
+== C. activation test (real agent turns, scripted probe model)
+probe model up on 127.0.0.1:18999                                  PASS
+negative control discovered but not eligible (missing bin)         PASS
+C1 prompt lists uptime-report with its exact description           PASS
+C1 prompt omits the gated negative control                         PASS
+C2 skills_read returned the skill body to the model                PASS
+C3 exec ran uptime and was allowed (L04 allowlist)                 PASS
+   reply: UPTIME-REPORT up=<varies> load=<varies>
+C4 reply matches the skill's output spec                           PASS
+C5 explicit $uptime-report: OpenClaw tells the model to read it    PASS
+(D skipped: set LIVE_MODEL=<provider/model> to test with your real model)
+16/16 PASS

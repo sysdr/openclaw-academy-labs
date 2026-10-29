@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "defaults": { "security": "deny", "ask": "on-miss", "askFallback": "deny", "autoAllowSkills": false },
+  "agents": {
+    "main": {
+      "security": "allowlist",
+      "ask": "on-miss",
+      "askFallback": "deny",
+      "autoAllowSkills": false,
+      "allowlist": [
+        { "pattern": "/usr/bin/uptime" },
+        { "pattern": "/usr/bin/ls" },
+        { "pattern": "/usr/bin/git", "argPattern": "^(status|log --oneline -n [0-9]{1,2})$" }
+      ]
+    }
+  }
+}
